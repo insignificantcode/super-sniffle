@@ -1,0 +1,45 @@
+# playbook for installing clamav
+---
+- hosts: all
+  tasks:
+    name: Copy clamd.conf to /etc
+    copy:
+    src: /etc/clamd.conf
+    dest: /etc/clamd.conf
+    owner: root
+    group: root
+    mode: 0644
+
+    name: Create quarantine directory and set permissions
+    file:
+    path: /quarantine
+    state: directory
+    mode: 0700
+    owner: root
+    group: root
+
+    name: Install ClamAV on RHEL 7 systems
+    yum: pkg={{item}} state=latest
+    with_items:
+     - clamav
+     - clamav-filesystem.noarch
+     - clamav-data.noarch
+     - clamav-lib*
+
+    name: Run chkconfig for clamd
+    command: /usr/sbin/chkconfig clamd on
+
+    name: Run cfengine to pull virus definitions
+    command: /usr/local/bin/runcfengine
+
+    name: Reload ClamAV with new definitions
+    command: /usr/bin/clamdscan --reload
+    when: (ansible_distribution == "Red Hat" and ansible_distribution_major_version == *7*)
+
+    name: Install ClamAV on RHEL 6 systems
+    yum: pkg={{item}} state=latest
+    with_items:
+     - clamav
+     - clamav-db
+     - clamd
+    when: (ansible_distribution == "Red Hat" and ansible_distribution_major_version == *6*)
