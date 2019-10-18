@@ -1,0 +1,25 @@
+# this playbook is for upgrading syncthing with some logging output
+# nh@nasa
+
+---
+- hosts: '{{ target }}'
+
+  tasks:
+    - name: Copy upgrade script
+      copy:
+        src: /opt/ansible/playbooks/xxx/syncthing_upgrade.sh
+        dest: /var/tmp/syncthing_upgrade.sh
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Run script to upgrade syncthing
+      shell: bash -x /var/tmp/syncthing_upgrade.sh
+      register: out
+
+    - name: Expunge the script
+      shell: rm-rf /var/tmp/syncthing_upgrade.sh
+
+    - debug: var=out.stdout_lines
+    - local_action:
+        copy content="{{ out.stdout_lines }}" dest="/tmp/nh-syncthing_upgrade{{ ansible_hostname }}-{{ ansible_eth0.ipv4.address }}.log"
