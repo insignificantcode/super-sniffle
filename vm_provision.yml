@@ -1,0 +1,295 @@
+# this playbook is the "xxx tune up" for XXX web VM's and xxx sites.
+# these are things that are needed when building new praca VM's vxxxX for
+# xxx sites like xxx etc.
+# nlhunt@nasa
+# SANITIZED VERSION
+
+---
+- hosts: '{{ target }}'
+
+  tasks:
+   - name: Creating 'xxx-ssl' group if it doesn't exist.
+     group:
+       name: xxx-ssl
+       state: present
+       system: yes
+       gid: 1225
+
+   - name: Insure the xxx group n1072 is created
+     group:
+       name: n1072
+       state: present
+       system: yes
+       gid: 1072
+
+   - name: Insure xxx user is created
+     user:
+       name: xxx
+       comment: XXX User
+       uid: 198
+       group: n1072
+       home: /u/wk/xxx
+       shell: /bin/bash
+       state: present
+
+   - name: adding xxx user to apache and xxx-ssl
+     user:
+       name: xxx
+       groups: "apache, xxx-ssl"
+       append: yes
+
+   - name: Install nodesource repo
+     shell: curl -sL https://rpm.nodesource.com/setup_8.x | bash -
+
+   - name: Install the latest node v8.x
+     yum:
+       name: nodejs.x86_64
+       state: latest
+
+   - name: Install node forever package
+     npm:
+       name: forever
+       global: yes
+       state: present
+
+   - name: Create node etc xxx react config directory
+     file:
+       path: /etc/nodejs
+       state: directory
+       owner: root
+       group: root
+       mode: 0775
+
+   - name: Create forever config file
+     file:
+       path: /etc/nodejs/xxx-react-server-forever
+       owner: xxx
+       group: n1072
+       state: touch
+       mode: 0600
+
+   - name: Append some stuff to forever config
+     shell: echo "/var/www/XXX-react-server/config/forever.production.json" > /etc/nodejs/XXX-react-server-forever
+
+   - name: Create mas react log directory
+     file:
+       path: /var/log/XXX-react
+       state: directory
+       owner: xxx
+       group: apache
+       mode: 0775
+   - name: Push XXX React Server systemd unit file
+     copy:
+       src: /opt/ansible/playbooks/xxx/XXX-react-server.service
+       dest: /etc/systemd/system/XXX-react-server.service
+       owner: root
+       group: root
+       mode: 0644
+
+   - name: Enable XXX React Server service in systemd
+     systemd:
+       name: XXX-react-server.service
+       enabled: yes
+       masked: no
+       state: stopped
+       daemon_reload: yes
+
+   - name: Install Percona repository
+     yum: name=https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+
+   - name: Install a list of packages
+     yum:
+       name:
+         - net-snmp.x86_64
+         - perl-DBI
+         - ImageMagick-perl
+         - perl-Algorithm-Diff
+         - perl-Archive-Tar
+         - perl-Authen-SASL
+         - perl-CGI
+         - perl-Class-Singleton
+         - perl-Convert-ASN1
+         - perl-core
+         - perl-Crypt-SSLeay
+         - perl-DBD-Pg
+         - perl-DBD-MySQL
+         - perl-DateTime
+         - perl-Digest-HMAC
+         - perl-Digest-SHA1
+         - perl-FCGI
+         - perl-File-Slurp
+         - perl-GD
+         - perl-GSSAPI
+         - perl-HTML-Tree
+         - perl-IO-Socket-SSL
+         - perl-IO-stringy
+         - perl-JSON
+         - perl-LDAP
+         - perl-libxml-perl
+         - perl-List-MoreUtils
+         - perl-LWP-Protocol-https.noarch
+         - perl-MailTools
+         - perl-Net-Daemon
+         - perl-Net-SSLeay
+         - perl-Newt
+         - perl-Package-DeprecationManager
+         - perl-Package-Stash
+         - perl-Package-Stash-XS
+         - perl-Params-Validate
+         - perl-PlRPC
+         - perl-Socket6
+         - perl-Test-Simple
+         - perl-TimeDate
+         - perl-Try-Tiny
+         - perl-version
+         - perl-XML-Dumper
+         - perl-XML-Filter-BufferText
+         - perl-XML-Grove
+         - perl-XML-LibXML
+         - perl-XML-NamespaceSupport
+         - perl-XML-Parser
+         - perl-XML-SAX
+         - perl-XML-SAX-Base
+         - perl-XML-SAX-Writer
+         - perl-XML-Twig
+         - perl-YAML
+         - perl-YAML-Tiny
+         - perltidy
+         - perl-DBD-MySQL
+         - perl-Template-Toolkit
+         - perl-Email-Send
+         - perl-Email-Sender
+         - perl-Email-MIME
+         - perl-URI
+         - perl-Math-Random-ISAAC
+         - perl-libwww-perl
+         - perl-HTML-Strip
+         - perl-HTML-Tidy
+         - perl-File-Type
+         - perl-File-Slurp
+         - perl-HTML-Parser
+         - perl-HTML-Scrubber
+         - perl-PDF-API2
+         - perl-Text-WordDiff
+         - perl-Data-UUID
+         - perl-Text-CSV
+         - perl-Spreadsheet-ParseExcel
+         - perl-Spreadsheet-WriteExcel
+         - perl-Archive-Zip
+         - perl-XML-LibXSLT
+         - perl-JSON-XS
+         - perl-SOAP-Lite
+         - perl-JSON-RPC
+         - perl-Sort-Naturally
+         - perl-DateTime-Format-MySQL
+         - perl-TheSchwartz
+         - perl-Daemon-Generic
+         - perl-Chart
+         - perl-Template-GD
+         - perl-GDGraph.noarch
+         - perl-GDTextUtil
+         - perl-Redis
+         - proxysql2
+         - Percona-Server-client-56.x86_64
+         - mod_ldap.x86_64
+         - mod_ssl.x86_64
+         - openldap-clients
+         - telnet.x86_64
+         - wireshark.x86_64
+         - java-1.8.0-openjdk.x86_64
+         - ghostscript.x86_64
+         - aspell.x86_64
+         - tesseract.x86_64
+         - libdbi-dbd-mysql.x86_64
+         - mysql-connector-odbc.x86_64
+         - redis.x86_64
+         - python2-PyMySQL
+         - MySQL-python
+         - python34
+         - python34-libs
+         - python3-PyMySQL
+         - python27-runtime
+         - python27-python-setuptools
+         - python27-python-libs
+         - python27-python
+         - python27-python-pip
+         - python27-MySQL-python
+         - python2-pyasn1
+         - python-zope-interface
+         - python2-pyrfc3339
+         - python2-future
+         - pytz
+         - python2-parsedatetime
+         - python-ndg_httpsclient
+         - python-zope-event
+         - python-zope-component
+         - audit-libs-python
+         - libsemanage-python
+         - python-ply
+         - python-pycparser
+         - python-cffi
+         - python-idna
+         - setools-libs
+         - python-urllib3
+         - python-requests
+         - python-requests-toolbelt
+         - python2-requests
+         - python-IPy
+         - python2-configargparse
+         - python2-mock
+         - checkpolicy
+         - python-enum34
+         - python2-cryptography
+         - python2-josepy
+         - python2-six
+         - python2-acme
+         - libcgroup
+         - policycoreutils-python
+         - python2-certbot
+         - perl-JSON-XS.x86_64
+         - perl-Archive-Zip.noarch
+         - perl-XML-LibXSLT.x86_64
+         - perl-SOAP-Lite.noarch
+         - perl-JSON-RPC.noarch
+         - perl-Sort-Naturally.noarch
+         - perl-DateTime-Format-MySQL.noarch
+         - perl-TheSchwartz.noarch
+         - perl-Daemon-Generic.noarch
+         - perl-Chart.noarch
+         - perl-Template-GD.noarch
+         - perl-GDGraph.noarch
+         - perl-GDTextUtil.noarch
+         - perl-Redis.noarch
+         - perl-DateTime-TimeZone.noarch
+         - perl-File-Find-Rule
+
+       state: present
+
+   - name: enable redis @ boot
+     systemd:
+       name: redis
+       enabled: yes
+       state: started
+
+   - name: enable apache @ boot
+     systemd:
+       name: httpd
+       enabled: yes
+
+   - name: adding proxysql to XXX-ssl group
+     user:
+       name: proxysql
+       groups: XXX-ssl
+       append: yes
+
+   - name: Download tika-app
+     get_url:
+       url: https://www.apache.org/dyn/closer.cgi/tika/tika-app-1.19.1.jar
+       dest: /usr/share/java/tika-app-1.19.1.jar
+       mode: 0644
+
+   - name: Create symbolic link for the tika-app.jar file
+     file:
+       src: "/usr/share/java/tika-app-1.19.1.jar"
+       dest: "/usr/share/java/tika-app.jar"
+       state: link
