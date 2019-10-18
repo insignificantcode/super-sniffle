@@ -1,0 +1,27 @@
+# this playbook is intended to upgrade the chrome and firefox browsers
+# along with flash for RHEL 6 and RHEL 7 systems. keep in mind there are
+# different chrome packages for RHEL 6 and 7. As well, if there is no patch
+# available, nothing will happen :)
+# nicholas@nasa
+
+---
+- hosts: "{{ target }}"
+
+  tasks:
+    - name: "Updating chrome, firefox, and flash-plugin for RHEL 6 hosts"
+      yum: pkg={{item}} state=latest
+      with_items:
+        - chromium-browser
+        - firefox
+        - flash-plugin
+      when:
+        - ansible_distribution_major_version == "6"
+
+    - name: "Updating chrome, firefox and flash-plugin for RHEL 7 hosts"
+      yum: pkg={{item}} state=latest
+      with_items:
+        - google-chrome-stable
+        - firefox
+        - flash-plugin
+      when:
+        - ansible_distribution_major_version == "7"
